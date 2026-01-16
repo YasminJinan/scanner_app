@@ -7,7 +7,8 @@ class MenuCard extends StatelessWidget {
   final List<Color> colors;
   final VoidCallback onTap;
 
-  const MenuCard({super.key, required this.title, required this.subtitle, required this.icon, required this.colors, required this.onTap});
+  const MenuCard({super.key, required this.title, required this.subtitle,
+   required this.icon, required this.colors, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
