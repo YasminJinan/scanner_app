@@ -4,12 +4,12 @@ import 'package:scanner_app/utils/currency_format.dart';
 
 class QrResultModal extends StatefulWidget {
   final String qrData;
-  final int totalHarga;
+
   final int total;
   final bool isPrinting;
   final VoidCallback onClose;
   
-  const QrResultModal({super.key, required this.qrData, required this.totalHarga, required this.isPrinting, required this.onClose, required this.total});
+  const QrResultModal({super.key, required this.qrData, required this.isPrinting, required this.onClose, required this.total});
 
   @override
   State<QrResultModal> createState() => _QrResultModalState();
