@@ -34,7 +34,7 @@ class CheckoutPanel extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2E3192)
+                color: Color.fromARGB(255, 101, 70, 12)
               ),
               )
             ],
@@ -54,7 +54,7 @@ class CheckoutPanel extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFF2E3192), Color(0xFF1BFFFF)
+                      Color.fromARGB(255, 245, 134, 44), Color.fromARGB(255, 237, 207, 131)
                     ]
                   ),
                   borderRadius: BorderRadius.circular(15),

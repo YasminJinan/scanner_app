@@ -1,11 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:scanner_app/screens/scanner/components/payment_modal.dart';
 import 'package:scanner_app/screens/scanner/components/scanner_header.dart';
 import 'package:scanner_app/screens/scanner/components/scanner_overlay.dart';
-
 class ScannerScreen extends StatefulWidget {
-  
   const ScannerScreen({super.key});
 
   @override
@@ -19,6 +18,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   );
 
   bool _isScanned = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,57 +30,54 @@ class _ScannerScreenState extends State<ScannerScreen> {
             controller: controller,
             onDetect: (capture) {
               if (_isScanned) return;
+              // kondisi yang ada di perulangan for, adalah kondisi ketika QR yang ditangkap oleh kamera
               for (final barcode in capture.barcodes) {
-                _handleQRCode;
+                _handleQRCode(barcode.rawValue);
               }
             },
-          ), 
-
+          ),
           ScannerOverlay(),
-
           ScannerHeader(controller: controller)
-
-          
         ],
       ),
     );
   }
+
   void _handleQRCode(String? code) {
     if (code != null) {
-      if (code.startsWith("PAY")) { // codenya berawal dari pay
-        // QR Code valid
+      if (code.startsWith("PAY:")) {
+        // QR Code Valid
         setState(() {
-          _isScanned == true;
+          _isScanned = true;
+
           final parts = code.split(":");
           final id = parts[1];
           final total = int.tryParse(parts[2]) ?? 0;
 
           _showPaymentModal(id, total);
         });
-
-       
       } else {
-        // QR Tidak valid
+        // QR Tidak Valid
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-             content: Row(
+            content: Row(
               children: [
-                Icon(Icons.error_outline, color: Colors.white,),
-                SizedBox(width: 10,),
-                Expanded(child: Text("QR Tidak Dikenali $code", overflow: TextOverflow.ellipsis,))
+                Icon(Icons.error_outline, color: Colors.white),
+                SizedBox(width: 10),
+                Expanded(child: Text("QR Tidak Dikenali $code", overflow: TextOverflow.ellipsis))
               ],
-             ),
-             backgroundColor: Colors.redAccent,
-             behavior: SnackBarBehavior.floating,
-             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-             duration: Duration(milliseconds: 1000),
+            ),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: Duration(milliseconds: 1000),
           )
         );
       }
     }
   }
-  // tampilan modal payment
+  // tampilkan modal payment
   void _showPaymentModal(String id, int total) {
     showModalBottomSheet(
       context: context,
@@ -89,7 +86,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
       builder: (paymentContext) => PaymentModal(
         id: id,
         total: total,
-        onPay: () { 
+        onPay: () {
           Navigator.pop(paymentContext);
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -102,14 +99,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
         onCancel: () {
           Navigator.pop(paymentContext);
           setState(() {
-            _isScanned = false; // mereset state agar bisa scan agi dari awal
+            _isScanned = false; // mereset state agar bisa scan lagi dari awal
           });
         },
-      ),
-    ).then((_)  {
+      )
+    ).then((_) {
       if (_isScanned) setState(() => _isScanned = false);
     });
   }
-  
-
 }

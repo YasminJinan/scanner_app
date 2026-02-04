@@ -54,7 +54,7 @@ class PaymentModal extends StatelessWidget {
               color: Color(0xFF2E3192)
             ),
           ),
-          SizedBox(height: 30,),
+          SizedBox(height: 10,),
           Text(
             "ID: $id",
             style: TextStyle(color: Colors.grey),
@@ -97,12 +97,12 @@ class PaymentModal extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(height: 30,),
+          SizedBox(height: 10,),
 
           // bottom bayar sekarang
           SizedBox(
             width: double.infinity,
-            height: 55,
+            height: 48,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.zero,
@@ -134,7 +134,7 @@ class PaymentModal extends StatelessWidget {
               "Batalkan",
               style: TextStyle(color: Colors.grey),
             ),
-          )
+          ),
         ],
       ),
     );

@@ -17,11 +17,69 @@ class CashierScreen extends StatefulWidget {
 }
 
 class _CashierScreenState extends State<CashierScreen> {
+  ProductCategory? selectedCategory;
   BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
   List<BluetoothDevice> _devices = [];
   BluetoothDevice? _selectedDevice;
   bool _connected = false;
   final Map<Product, int> _cart = {};
+
+
+  // HELPER METHOD
+  Widget _buildCategoryTab({
+  required String label,
+  IconData? icon,
+  required bool isActive,
+  required VoidCallback onTap,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(right: 10),
+    child: GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: isActive
+              ? const LinearGradient(
+                  colors: [
+                    Color(0xFFF4A261),
+                    Color(0xFFE6D3A3),
+                  ],
+                )
+              : null,
+          border: isActive
+              ? null
+              : Border.all(color: const Color(0xFFD6C4A8)),
+        ),
+        child: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 18,
+                color: isActive
+                    ? Colors.white
+                    : const Color(0xFF7A6F5B),
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: isActive
+                    ? Colors.white
+                    : const Color(0xFF7A6F5B),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 
   @override
   void initState( ) {
@@ -100,7 +158,7 @@ class _CashierScreenState extends State<CashierScreen> {
    // perbedaan antara bang & not, baik fungsi dan positioning
   void removeFromCart(Product product) {
     setState(() {
-      if (_cart.containsKey(product) && _cart[product] ! > 1) {
+      if (_cart.containsKey(product) && _cart[product]! > 1) {
         _cart[product] = _cart[product]! - 1;
       } else {
         _cart.remove(product);
@@ -184,6 +242,10 @@ class _CashierScreenState extends State<CashierScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final filteredMenus = selectedCategory == null
+   ? menus
+   : menus.where((p) => p.category == selectedCategory).toList();
+
     return Scaffold(
       backgroundColor: Color(0xFFF5F7FA),
       appBar: AppBar(
@@ -204,8 +266,9 @@ class _CashierScreenState extends State<CashierScreen> {
       ),
       // ini code buat isi menunya sama printernya (1 body)
       body: Column(
+        
         children: [
-          // DROPDOWN SELECT PRINTER
+           // DROPDOWN SELECT PRINTER
           PrinterSelector(
             devices: _devices, 
             selectedDevice: _selectedDevice,
@@ -213,6 +276,45 @@ class _CashierScreenState extends State<CashierScreen> {
             onSelected: _connectedToDevice,
           ),
 
+          // filter tab
+                 //FILTER TAB — DI SINI
+        SizedBox(
+          height: 44,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            children: [
+              _buildCategoryTab(
+                label: "All",
+                isActive: selectedCategory == null,
+                onTap: () => setState(() => selectedCategory = null),
+              ),
+              _buildCategoryTab(
+                label: "Coffee",
+                icon: Icons.local_cafe_rounded,
+                isActive: selectedCategory == ProductCategory.coffee,
+                onTap: () =>
+                    setState(() => selectedCategory = ProductCategory.coffee),
+              ),
+              _buildCategoryTab(
+                label: "Iced",
+                icon: Icons.ac_unit_rounded,
+                isActive: selectedCategory == ProductCategory.iced,
+                onTap: () =>
+                    setState(() => selectedCategory = ProductCategory.iced),
+              ),
+              _buildCategoryTab(
+                label: "Pastry",
+                icon: Icons.bakery_dining_rounded,
+                isActive: selectedCategory == ProductCategory.pastry,
+                onTap: () =>
+                    setState(() => selectedCategory = ProductCategory.pastry),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 20,),
+            
           Expanded(
             child: GridView.builder(
               padding: EdgeInsets.symmetric(
@@ -222,11 +324,11 @@ class _CashierScreenState extends State<CashierScreen> {
                 crossAxisCount: 2,
                 childAspectRatio: 0.8,
                 crossAxisSpacing: 15,
-                mainAxisExtent: 15,
+                mainAxisSpacing: 15,
               ),
-              itemCount: menus.length,
+              itemCount: filteredMenus.length,
               itemBuilder: (context, index) {
-                final product = menus[index];
+                final product = filteredMenus[index];
                 final qty = _cart[product] ?? 0;
 
                 // pemanggilan product list pada product card
@@ -249,5 +351,7 @@ class _CashierScreenState extends State<CashierScreen> {
         ],
       ),
     );
+
+    
   }
 }
